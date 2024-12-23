@@ -1,37 +1,38 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
 public class SliderText : MonoBehaviour
 {
 	[SerializeField] 
-	private Slider slider;
+	private Slider _slider;
 
-	private Text text;
+	private Text _text;
 
 	private void Awake()
 	{
-		text = GetComponent<Text>();
+		_text = GetComponent<Text>();
 	}
 
 	private void OnEnable()
 	{
-		text.text = GetFormattedSliderValue(slider.value);
-		slider.onValueChanged.AddListener(OnSliderChanged);
+		_text.text = GetFormattedSliderValue(_slider.value);
+		_slider.onValueChanged.AddListener(OnSliderChanged);
 	}
 
 	private void OnDisable()
 	{
-		slider.onValueChanged.RemoveListener(OnSliderChanged);
+		_slider.onValueChanged.RemoveListener(OnSliderChanged);
 	}
 
 	private void OnSliderChanged(float value)
 	{
-		text.text = GetFormattedSliderValue(value);
+		_text.text = GetFormattedSliderValue(value);
 	}
 
 	private static string GetFormattedSliderValue(float value)
 	{
-		return string.Format("{0:0.00}", value);
+		return $"{value:0.00}";
 	}
 }
