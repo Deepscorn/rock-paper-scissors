@@ -1,66 +1,65 @@
 ﻿using System;
 using Game.Utils;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Game
 {
     // Game logic is in separate file always. It's usually many files. Only one here for interview test task
     public class Logic
     {
-        private static Logic instance;
-        private readonly HandDecision[] allDecisions = EnumExt.GetValues<HandDecision>();
+        private static readonly HandDecision[] AllDecisions = EnumExt.GetValues<HandDecision>();
+        
+        public int PlayerScore { get; private set; }
+        public int OpponentScore { get; private set; }
+
+        private readonly System.Random _random = new(Environment.TickCount);
 
         public HandDecision MakeOpponentDecision()
         {
-            return allDecisions[Random.Range(0, allDecisions.Length)];
+            return AllDecisions[_random.Next(0, AllDecisions.Length)];
         }
 
-        public HandDecision MakeOpponentDecision(
-            HandDecision decision, 
-            float unhonestCoef,
-            int playerScore,
-            int opponentScore)
+        public HandDecision MakeOpponentDecision(HandDecision decision, float aiDifficultyCoef)
         {
-            if (Mathf.Approximately(unhonestCoef, 1f))
+            if (Mathf.Approximately(aiDifficultyCoef, 1f))
             {
                 return GetWinDecision(decision);
             }
-            if (Mathf.Approximately(unhonestCoef, 0f))
+            if (Mathf.Approximately(aiDifficultyCoef, 0f))
             {
                 return GetLoseDecision(decision);
             }
             
             float current;
 
-            if (playerScore != 0) // защита от деления на ноль
+            if (PlayerScore != 0) // защита от деления на ноль
             {
-                current = opponentScore / (float) playerScore;
+                current = OpponentScore / (float) PlayerScore;
             }
             else
             {
-                current = 1 - unhonestCoef;
+                current = 1 - aiDifficultyCoef;
             }
 
-            if (current < unhonestCoef) // нужно победить
+            if (current < aiDifficultyCoef) // нужно победить
             {
                 // ничья обеспечивает более медленное приближение к целевому значению
-                float maybeCurrent = (opponentScore + 1) / (float) (playerScore + 1);
+                float maybeCurrent = (OpponentScore + 1) / (float) (PlayerScore + 1);
 
-                if (maybeCurrent < unhonestCoef)
+                if (maybeCurrent < aiDifficultyCoef)
                 {
                     // но если в результате мы не достигаем unhonestCoef, то двигаемся победой
                     return GetWinDecision(decision);
                 }
                 return decision; // двигаемся ничьей
             }
-            if (current > unhonestCoef) // нужно програть
+            if (current > aiDifficultyCoef) // нужно програть
             {
                 //return GetOpponentDecisionToLose(decision);
                 // ничья обеспечивает более медленное приближение к целевому значению
-                float maybeCurrent = (opponentScore + 1) / (float) (playerScore + 1);
+                float maybeCurrent = (OpponentScore + 1) / (float) (PlayerScore + 1);
 
-                if (maybeCurrent > unhonestCoef)
+                if (maybeCurrent > aiDifficultyCoef)
                 {
                     // но если в результате мы не достигаем unhonestCoef, то двигаемся поражением
                     return GetLoseDecision(decision);
@@ -83,6 +82,12 @@ namespace Game
             }
             
             return GameResult.PlayerWins;
+        }
+
+        public void UpdateScore(GameResult roundResult)
+        {
+            PlayerScore += roundResult != GameResult.PlayerLose ? 1 : 0;
+            OpponentScore += roundResult != GameResult.PlayerWins ? 1 : 0;
         }
 
         private HandDecision GetWinDecision(HandDecision playerDecision)

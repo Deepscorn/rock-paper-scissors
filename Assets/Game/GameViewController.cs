@@ -52,8 +52,6 @@ namespace Game
         private float _animationDuration = 0.1f;
 
         private Logic _logic;
-        private int playerScore;
-        private int opponentScore;
         private CancellationTokenSource _cancelTokenSource;
 
         private void Awake()
@@ -102,9 +100,7 @@ namespace Game
             {
                 opponentDecision = _logic.MakeOpponentDecision(
                     playerDecision, 
-                    _aiDifficultySlider.value, 
-                    playerScore, 
-                    opponentScore);
+                    _aiDifficultySlider.value);
             }
 
             await ShowOpponentDecision(opponentDecision);
@@ -141,11 +137,13 @@ namespace Game
 
         private void UpdateScore(GameResult roundResult)
         {
-            playerScore += roundResult != GameResult.PlayerLose ? 1 : 0;
-            opponentScore += roundResult != GameResult.PlayerWins ? 1 : 0;
+            _logic.UpdateScore(roundResult);
 
             var postfix = Localization.NoOneWin;
             var color = GameConstants.DrawColor;
+
+            var playerScore = _logic.PlayerScore;
+            var opponentScore = _logic.OpponentScore;
             if (playerScore != opponentScore)
             {
                 postfix = playerScore > opponentScore ? Localization.YouWin : Localization.OpponentWin;
