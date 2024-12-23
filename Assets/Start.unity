@@ -858,9 +858,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 534414621}
-  - component: {fileID: 534414622}
+  - component: {fileID: 534414623}
   m_Layer: 0
-  m_Name: Controllers
+  m_Name: LogicControllers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -881,7 +881,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &534414622
+--- !u!114 &534414623
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -890,22 +890,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 534414620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6507838b0ad848d8877238d68f33144c, type: 3}
+  m_Script: {fileID: 11500000, guid: c9a5a4929fcb4143a218d601ee8b731d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mediumAiDifficultyToggle: {fileID: 1063315839}
-  _aiDifficultySlider: {fileID: 835838881}
-  _scoreText: {fileID: 1552170217}
-  _opponentDecisionText: {fileID: 1569254013}
-  _roundResultWin: {fileID: 64012156}
-  _roundResultLose: {fileID: 804716605}
-  _roundResultDraw: {fileID: 1326187839}
-  _stoneToggle: {fileID: 369578382}
-  _scissorsToggle: {fileID: 1938630118}
-  _paperToggle: {fileID: 1312710021}
-  _buttonsLayout: {fileID: 106634176}
-  _difficultyPanel: {fileID: 459199092}
-  _animationDuration: 0.3
+  _gameViewController: {fileID: 1281487700}
 --- !u!1 &538347049
 GameObject:
   m_ObjectHideFlags: 0
@@ -1701,6 +1689,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1232750483}
   m_CullTransparentMesh: 1
+--- !u!1 &1281487699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1281487701}
+  - component: {fileID: 1281487700}
+  m_Layer: 0
+  m_Name: ViewControllers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1281487700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281487699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6507838b0ad848d8877238d68f33144c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mediumAiDifficultyToggle: {fileID: 1063315839}
+  _aiDifficultySlider: {fileID: 835838881}
+  _scoreText: {fileID: 1552170217}
+  _opponentDecisionText: {fileID: 1569254013}
+  _roundResultWin: {fileID: 64012156}
+  _roundResultLose: {fileID: 804716605}
+  _roundResultDraw: {fileID: 1326187839}
+  _stoneToggle: {fileID: 369578382}
+  _scissorsToggle: {fileID: 1938630118}
+  _paperToggle: {fileID: 1312710021}
+  _buttonsLayout: {fileID: 106634176}
+  _difficultyPanel: {fileID: 459199092}
+  _animationDuration: 0.3
+--- !u!4 &1281487701
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281487699}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 418.20868, y: 333.76794, z: -0.14810404}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1312710019
 GameObject:
   m_ObjectHideFlags: 0
@@ -3046,3 +3091,4 @@ SceneRoots:
   - {fileID: 424100026}
   - {fileID: 1820889153}
   - {fileID: 534414621}
+  - {fileID: 1281487701}

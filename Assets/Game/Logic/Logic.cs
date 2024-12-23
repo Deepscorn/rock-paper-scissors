@@ -5,21 +5,9 @@ using Random = UnityEngine.Random;
 
 namespace Game
 {
-    // Game is simple, so is game class logic. In real game, game logic can't be in one file
+    // Game logic is in separate file always. It's usually many files. Only one here for interview test task
     public class Logic
     {
-        public static Logic Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new Logic();
-                }
-                return instance;
-            }
-        }
-        
         private static Logic instance;
         private readonly HandDecision[] allDecisions = EnumExt.GetValues<HandDecision>();
 

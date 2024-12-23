@@ -4,7 +4,6 @@ using System.Linq;
 using DG.Tweening;
 using Game.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game
@@ -50,15 +49,19 @@ namespace Game
         [SerializeField] 
         private float _animationDuration = 0.1f;
 
-        private Logic logic;
+        private Logic _logic;
         private int playerScore;
         private int opponentScore;
 
         private void Awake()
         {
-            logic = Logic.Instance;
             _difficultyPanel.gameObject.SetActive(!_mediumAiDifficultyToggle.isOn);
             _mediumAiDifficultyToggle.gameObject.SetActive(_mediumAiDifficultyToggle.isOn);
+        }
+
+        public void Init(Logic logic)
+        {
+            _logic = logic;
         }
 
         private void Start()
@@ -88,11 +91,11 @@ namespace Game
             HandDecision opponentDecision;
             if (_mediumAiDifficultyToggle.isOn)
             {
-                opponentDecision = logic.MakeOpponentDecision();
+                opponentDecision = _logic.MakeOpponentDecision();
             }
             else
             {
-                opponentDecision = logic.MakeOpponentDecision(
+                opponentDecision = _logic.MakeOpponentDecision(
                     playerDecision, 
                     _aiDifficultySlider.value, 
                     playerScore, 
@@ -101,7 +104,7 @@ namespace Game
 
             yield return ShowOpponentDecision(opponentDecision);
 
-            var roundResult = logic.GetRoundResult(playerDecision, opponentDecision);
+            var roundResult = _logic.GetRoundResult(playerDecision, opponentDecision);
         
             yield return new WaitForSeconds(_animationDuration);
             yield return ShowRoundResult(roundResult);
