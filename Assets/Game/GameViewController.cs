@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Game.Utils;
 using UnityEngine;
@@ -52,11 +54,13 @@ namespace Game
         private Logic _logic;
         private int playerScore;
         private int opponentScore;
+        private CancellationTokenSource _cancelTokenSource;
 
         private void Awake()
         {
             _difficultyPanel.gameObject.SetActive(!_mediumAiDifficultyToggle.isOn);
             _mediumAiDifficultyToggle.gameObject.SetActive(_mediumAiDifficultyToggle.isOn);
+            _cancelTokenSource = new();
         }
 
         public void Init(Logic logic)
@@ -78,13 +82,14 @@ namespace Game
 
         private void OnDestroy()
         {
+            _cancelTokenSource.Cancel();
             RemoveListener(_stoneToggle);
             RemoveListener(_scissorsToggle);
             RemoveListener(_paperToggle);
             _mediumAiDifficultyToggle.onValueChanged.RemoveAllListeners();
         }
 
-        private IEnumerator RoundRoutine(HandDecision playerDecision)
+        private async UniTask RoundRoutine(HandDecision playerDecision)
         {
             _buttonsLayout.SetInteractable(false);
             
@@ -102,16 +107,31 @@ namespace Game
                     opponentScore);
             }
 
-            yield return ShowOpponentDecision(opponentDecision);
+            await ShowOpponentDecision(opponentDecision);
+
+            if (_cancelTokenSource.IsCancellationRequested)
+            {
+                return;
+            }
 
             var roundResult = _logic.GetRoundResult(playerDecision, opponentDecision);
         
-            yield return new WaitForSeconds(_animationDuration);
-            yield return ShowRoundResult(roundResult);
+            await UniTask.WaitForSeconds(_animationDuration);
+            await ShowRoundResult(roundResult);
+            
+            if (_cancelTokenSource.IsCancellationRequested)
+            {
+                return;
+            }
 
             UpdateScore(roundResult);
             
-            yield return new WaitWhile(() => Input.GetMouseButtonDown(0) == false);
+            await UniTask.WaitWhile(() => Input.GetMouseButtonDown(0) == false);
+            
+            if (_cancelTokenSource.IsCancellationRequested)
+            {
+                return;
+            }
             
             HideRoundResult();
             _opponentDecisionText.text = Localization.SelectYourFigure;
@@ -145,13 +165,13 @@ namespace Game
             }
         }
 
-        private IEnumerator ShowRoundResult(GameResult roundResult)
+        private async UniTask ShowRoundResult(GameResult roundResult)
         {
             var resultText = GetRoundResultText(roundResult).gameObject.GetOrAddComponent<CanvasGroup>();
             resultText.gameObject.SetActive(true);
             
             resultText.alpha = 0;
-            yield return resultText.DOFade(1, _animationDuration).WaitForCompletion();
+            await resultText.DOFade(1, _animationDuration).Play().ToUniTask();
         }
 
         private Text GetRoundResultText(GameResult roundResult)
@@ -169,17 +189,17 @@ namespace Game
             }
         }
 
-        private IEnumerator ShowOpponentDecision(HandDecision opponentDecision)
+        private async UniTask ShowOpponentDecision(HandDecision opponentDecision)
         {
             _opponentDecisionText.text = ".";
             
-            yield return new WaitForSeconds(_animationDuration);
+            await UniTask.WaitForSeconds(_animationDuration);
             _opponentDecisionText.text = "..";
             
-            yield return new WaitForSeconds(_animationDuration);
+            await UniTask.WaitForSeconds(_animationDuration);
             _opponentDecisionText.text = "...";
             
-            yield return new WaitForSeconds(_animationDuration);
+            await UniTask.WaitForSeconds(_animationDuration);
             _opponentDecisionText.text = Localization.Localize(opponentDecision);
         }
 
@@ -189,7 +209,9 @@ namespace Game
             {
                 if (on)
                 {
-                    StartCoroutine(RoundRoutine(decision));
+                    _cancelTokenSource.Cancel();
+                    _cancelTokenSource = new CancellationTokenSource();
+                    RoundRoutine(decision).Forget();
                 }
             });
         }
